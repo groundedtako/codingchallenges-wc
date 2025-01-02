@@ -1,59 +1,85 @@
-# Checksum Calculator
+# Word Count (wc) Utility
 
-A simple command-line tool to calculate file checksums using various algorithms (SHA-1, SHA-256, MD5).
+A Java implementation of the Unix `wc` utility that counts lines, words, and bytes in text files.
 
-## Requirements
+## Features
 
-- Java 17 or higher
+- Count lines (`-l`, `--lines`)
+- Count words (`-w`, `--words`)
+- Count bytes (`-c`, `--bytes`)
+- Count characters (`-m`, `--chars`)
+- Process multiple files at once
+- Read from standard input when no files are specified
+- Display totals when processing multiple files
 
-## Installation
+## Framework and Technologies
 
-1. Download `checksum.jar` from the releases
-2. (Optional) Add the directory containing `checksum.jar` to your PATH
+- **Java**: Core implementation language
+- **Gradle**: Build automation and dependency management
+- **Picocli**: Command-line argument parsing framework
+- **JUnit 5**: Testing framework
+- **Mockito**: Mocking framework for testing
+- **JaCoCo**: Code coverage reporting
 
-## Usage
+## Design
 
-You can run the tool in two ways:
+The project follows a modular design with clear separation of concerns:
 
-### Using java -jar directly:
+- `Main`: Entry point that handles command registration and execution
+- `Command`: Interface defining the contract for all command implementations
+- `WcCommand`: Core implementation of the word count functionality
+  - Implements both the `Command` interface and Picocli's `Callable`
+  - Uses the Command pattern for extensibility
+  - Handles both file and stdin input streams
+  - Preserves platform-specific line endings (CRLF/LF)
+
+## Testing
+
+Comprehensive test suite covering various scenarios:
+
+- Single file processing
+- Multiple file processing
+- Standard input processing
+- Different counting options:
+  - Line counting
+  - Word counting
+  - Byte counting
+- Edge cases:
+  - Empty files
+  - Files with different line endings
+  - Non-existent files
+  - Invalid options
+
+## Building and Running
+
 ```bash
-java -jar checksum.jar --algorithm SHA-1 file.txt
+# Build the project
+./gradlew build
+
+# Run the application
+java -jar build/libs/coreutils.jar wc [options] [file...]
+
+# Examples
+java -jar build/libs/coreutils.jar wc -l file.txt     # Count lines
+java -jar build/libs/coreutils.jar wc -w file.txt     # Count words
+java -jar build/libs/coreutils.jar wc -c file.txt     # Count bytes
+java -jar build/libs/coreutils.jar wc file1.txt file2.txt  # Process multiple files
 ```
 
-### Using the provided scripts:
-Windows:
+## Dependencies
+
+- Picocli 4.7.6: Command-line parsing
+- SLF4J 2.0.9: Logging facade
+- Logback 1.4.11: Logging implementation
+- JUnit Jupiter 5.9.1: Testing
+- Mockito 5.8.0: Mocking framework
+
+## Code Coverage
+
+The project uses JaCoCo for code coverage reporting. Coverage reports can be generated using:
+
 ```bash
-checksum.bat --algorithm SHA-1 file.txt
+./gradlew jacocoTestReport
 ```
 
-Unix/Linux/MacOS:
-```bash
-./checksum.sh --algorithm SHA-1 file.txt
-```
-
-### Options
-
-- `--algorithm, -a`: Specify the hash algorithm (default: SHA-256)
-  - Supported algorithms: MD5, SHA-1, SHA-256
-- `--help, -h`: Show help message
-- `--version, -V`: Show version information
-
-### Examples
-
-Calculate SHA-1 hash:
-```bash
-java -jar checksum.jar --algorithm SHA-1 myfile.txt
-```
-
-Calculate default SHA-256 hash:
-```bash
-java -jar checksum.jar myfile.txt
-```
-
-## Building from Source
-
-If you want to build the project yourself:
-
-1. Clone the repository
-2. Run `./gradlew build` (or `gradlew.bat build` on Windows)
-3. Find the built jar in `build/libs/checksum.jar`
+Reports are available in `build/jacocoHtml/`.
